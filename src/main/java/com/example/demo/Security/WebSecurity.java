@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -42,11 +43,12 @@ public class WebSecurity {
 			  .authorizeHttpRequests(
 					configure ->
 						configure
-								.requestMatchers(HttpMethod.POST,SecurityConstants.SIGN_UP_URL)
+								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.SIGN_UP_URL,HttpMethod.POST.name()))
 								.permitAll().anyRequest().authenticated()
 				)
 			  .authenticationManager(authenticationManager)
 			  .addFilter(authenticationFilter)
+			  .addFilter(new AuthorizationFilter(authenticationManager))
 			  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			  .build();
 	}

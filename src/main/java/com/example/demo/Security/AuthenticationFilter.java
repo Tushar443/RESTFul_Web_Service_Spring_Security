@@ -49,7 +49,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         System.out.println("----------AuthenticationFilter == successfulAuthentication() Method Call----------");
-        byte [] secreteKeyBytes = SecurityConstants.TOKEN_SECRET.getBytes();
+        byte [] secreteKeyBytes = SecurityConstants.getTokenSecret().getBytes();
         SecretKey secretKey = Keys.hmacShaKeyFor(secreteKeyBytes);
         Instant now = Instant.now();
 
