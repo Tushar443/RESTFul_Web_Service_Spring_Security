@@ -10,6 +10,6 @@ public interface UserRepo extends CrudRepository<UserEntity, Long> {
 
 	UserEntity findUserByEmail(String email);
 
-
+	UserEntity findByUserId(String id);
 
 }
