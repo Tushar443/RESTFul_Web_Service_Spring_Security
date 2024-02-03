@@ -1,12 +1,11 @@
 package com.example.demo.Security;
 
-import com.example.demo.ws.Service.UserService;
+import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.SpringApplicationContext;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserLoginRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,11 +19,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -61,7 +58,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .signWith(secretKey)
                 .compact();
 
-        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserServiceIfc userService = (UserServiceIfc) SpringApplicationContext.getBean("userServiceImpl");
         UserDto userDto = userService.getUser(userName);
         response.addHeader(SecurityConstants.HEADER_STRING,SecurityConstants.TOKEN_PREFIX + token);
         response.addHeader(SecurityConstants.USER_ID,userDto.getUserId());

@@ -1,6 +1,6 @@
 package com.example.demo.Security;
 
-import com.example.demo.ws.Service.UserService;
+import com.example.demo.ws.Service.UserServiceIfc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,10 +17,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurity {
 
-	private final UserService userDetailsService2;
+	private final UserServiceIfc userDetailsService2;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	public WebSecurity(UserService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+	public WebSecurity(UserServiceIfc userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.userDetailsService2 = userDetailsService;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
