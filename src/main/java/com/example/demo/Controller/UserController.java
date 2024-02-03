@@ -12,6 +12,8 @@ import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
 import com.example.demo.ws.ui.model.response.UserRest;
 
+import java.util.*;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/users")
@@ -70,4 +72,20 @@ public class UserController {
 		BeanUtils.copyProperties(updateUser, userRest);
 		return userRest;
 	}
+
+    @GetMapping
+    public List<UserRest> getUserByCondition(@RequestParam(value ="page" ,defaultValue = "0") int page,
+                                             @RequestParam(value ="limit" ,defaultValue = "25") int limit){
+        List<UserRest> returnValue = new ArrayList<>();
+
+        List<UserDto> users = userSerivce.getUsers(page,limit);
+
+        for (UserDto userDto : users){
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnValue.add(userModel);
+        }
+
+        return returnValue;
+    }
 }
