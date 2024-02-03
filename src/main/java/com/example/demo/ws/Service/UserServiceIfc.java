@@ -5,11 +5,15 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.ws.shared.dto.UserDto;
 @Service
-public interface UserService extends UserDetailsService{
+public interface UserServiceIfc extends UserDetailsService{
 
 	UserDto createUser(UserDto user);
 
 	UserDto getUser(String email);
 
     UserDto getUserByUserId(String id);
+
+	UserDto updateUser(String id, UserDto userDto);
+
+	UserDto DeleteUser(String id);
 }

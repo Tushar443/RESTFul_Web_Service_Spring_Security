@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Repository.UserRepo;
-import com.example.demo.ws.Service.UserService;
+import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.io.Entity.UserEntity;
 import com.example.demo.ws.shared.MyUtils;
 import com.example.demo.ws.shared.dto.UserDto;
@@ -17,7 +17,7 @@ import com.example.demo.ws.shared.dto.UserDto;
 import java.util.ArrayList;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserServiceIfc {
 
 	@Autowired
 	UserRepo userRepo;
@@ -76,6 +76,41 @@ public class UserServiceImpl implements UserService {
 			throw new UsernameNotFoundException(id);
 		}
 		UserDto returnValue = new UserDto();
+		BeanUtils.copyProperties(userEntity,returnValue);
+		return returnValue;
+	}
+
+	/**
+	 * @param id
+	 * @param userDto
+	 * @return
+	 */
+	@Override
+	public UserDto updateUser(String id, UserDto userDto) {
+		UserEntity userEntity = userRepo.findByUserId(id);
+		if(userEntity == null){
+			throw new UsernameNotFoundException(id);
+		}
+		UserDto returnValue = new UserDto();
+		userEntity.setFirstName(userDto.getFirstName());
+		userEntity.setLastName(userDto.getLastName());
+		UserEntity updatedUser = userRepo.save(userEntity);
+		BeanUtils.copyProperties(updatedUser,returnValue);
+		return returnValue;
+	}
+
+	/**
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public UserDto DeleteUser(String id) {
+		UserEntity userEntity = userRepo.findByUserId(id);
+		if(userEntity == null){
+			throw new UsernameNotFoundException(id);
+		}
+		UserDto returnValue = new UserDto();
+		userRepo.delete(userEntity);
 		BeanUtils.copyProperties(userEntity,returnValue);
 		return returnValue;
 	}

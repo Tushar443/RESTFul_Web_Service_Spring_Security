@@ -1,12 +1,13 @@
 package com.example.demo.Controller;
 
+import com.example.demo.ws.exception.UserServiceException;
 import com.example.demo.ws.ui.model.response.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.ws.Service.UserService;
+import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
 import com.example.demo.ws.ui.model.response.UserRest;
@@ -17,7 +18,7 @@ import com.example.demo.ws.ui.model.response.UserRest;
 public class UserController {
 
 	@Autowired
-	UserService userSerivce;
+	UserServiceIfc userSerivce;
 
 //	@GetMapping("/")
 	@GetMapping(path = "/{id}")
@@ -31,11 +32,13 @@ public class UserController {
 //	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}
 //				,produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
 
-	@PostMapping
+	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}
+				,produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
 	public UserRest addUser(@RequestBody UserDetailsReqModel userDetails) throws Exception {
 		UserRest userRest = new UserRest();
 		if(userDetails.getFirstName().isEmpty()){
-			throw new Exception(ErrorMessages.MESSING_REQUIRED_FIELDS.getErrorMessage());
+//			throw new Exception(ErrorMessages.MESSING_REQUIRED_FIELDS.getErrorMessage());
+			throw new UserServiceException(ErrorMessages.MESSING_REQUIRED_FIELDS.getErrorMessage());
 		}
 		UserDto userDto = new UserDto();
 		System.out.println("Call create User");
@@ -45,13 +48,26 @@ public class UserController {
 		return userRest;
 	}
 
-	@DeleteMapping
-	public String deleteUser() {
-		return "delete user called";
+	@DeleteMapping(path = "/{id}")
+	public UserRest deleteUser(@PathVariable String id) {
+        UserRest userRest = new UserRest();
+        System.out.println("Call Delete User");
+        UserDto deletedUser = userSerivce.DeleteUser(id);
+        BeanUtils.copyProperties(deletedUser, userRest);
+        return userRest;
 	}
 
-	@PutMapping
-	public String updateUser() {
-		return "update user called";
+	@PutMapping(path = "/{id}")
+	public UserRest updateUser(@PathVariable String id,@RequestBody UserDetailsReqModel userDetails) {
+		UserRest userRest = new UserRest();
+		if(userDetails.getFirstName().isEmpty()){
+			throw new UserServiceException(ErrorMessages.MESSING_REQUIRED_FIELDS.getErrorMessage());
+		}
+		UserDto userDto = new UserDto();
+		System.out.println("Call Update User");
+		BeanUtils.copyProperties(userDetails, userDto);
+		UserDto updateUser = userSerivce.updateUser(id ,userDto);
+		BeanUtils.copyProperties(updateUser, userRest);
+		return userRest;
 	}
 }
