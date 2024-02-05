@@ -1,7 +1,13 @@
 package com.example.demo.ws.Service.impl;
 
+import com.example.demo.ws.shared.dto.AddressDTO;
+import com.example.demo.ws.ui.model.response.UserRest;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +21,7 @@ import com.example.demo.ws.shared.MyUtils;
 import com.example.demo.ws.shared.dto.UserDto;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserServiceIfc {
@@ -31,26 +38,23 @@ public class UserServiceImpl implements UserServiceIfc {
 	@Override
 	public UserDto createUser(UserDto user) {
 		UserEntity storeUser = userRepo.findUserByEmail(user.getEmail());
+		ModelMapper mapper = new ModelMapper();
 		if(storeUser != null) {
 			throw new RuntimeException("Duplicate Recorde");
 		}
-
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(user, userEntity);
-
+		for(int i =0 ; i < user.getAddresses().size();i++){
+			AddressDTO address = user.getAddresses().get(i);
+			address.setUserDetails(user);
+			address.setAddressId(utils.generateAddressId(30));
+			user.getAddresses().set(i,address);
+		}
+		UserEntity userEntity = mapper.map(user,UserEntity.class);
 		String publicUserId = utils.generateUserId(16);
 		userEntity.setUserId(publicUserId);
-
-
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-
 		//save in DB
 		UserEntity userEntityDB = userRepo.save(userEntity);
-
-		UserDto userDto = new UserDto();
-
-		BeanUtils.copyProperties(userEntityDB, userDto);
-
+		UserDto userDto = mapper.map(userEntityDB,UserDto.class);
 		return userDto;
 	}
 
@@ -73,7 +77,7 @@ public class UserServiceImpl implements UserServiceIfc {
 	public UserDto getUserByUserId(String id) {
 		UserEntity userEntity = userRepo.findByUserId(id);
 		if(userEntity == null){
-			throw new UsernameNotFoundException(id);
+			throw new UsernameNotFoundException("User with id = "+id+" not Found");
 		}
 		UserDto returnValue = new UserDto();
 		BeanUtils.copyProperties(userEntity,returnValue);
@@ -112,6 +116,27 @@ public class UserServiceImpl implements UserServiceIfc {
 		UserDto returnValue = new UserDto();
 		userRepo.delete(userEntity);
 		BeanUtils.copyProperties(userEntity,returnValue);
+		return returnValue;
+	}
+
+	/**
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@Override
+	public List<UserDto> getUsers(int page, int limit) {
+		List<UserDto> returnValue = new ArrayList<>();
+
+		Pageable pageable = PageRequest.of(page,limit);
+
+		Page<UserEntity> userPages = userRepo.findAll(pageable);
+		List<UserEntity> userEntities = userPages.getContent();
+		for (UserEntity userEntity : userEntities){
+			UserDto userDto= new UserDto();
+			BeanUtils.copyProperties(userEntity, userDto);
+			returnValue.add(userDto);
+		}
 		return returnValue;
 	}
 
