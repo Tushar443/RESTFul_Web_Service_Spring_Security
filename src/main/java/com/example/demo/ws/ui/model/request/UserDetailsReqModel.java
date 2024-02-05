@@ -1,5 +1,7 @@
 package com.example.demo.ws.ui.model.request;
 
+import java.util.List;
+
 public class UserDetailsReqModel {
 
 	private String firstName;
@@ -7,6 +9,7 @@ public class UserDetailsReqModel {
 	private String email;
 	private String password;
 
+private List<AddressRequestModel> addresses;
 
 	public String getFirstName() {
 		return firstName;
@@ -33,5 +36,11 @@ public class UserDetailsReqModel {
 		this.password = password;
 	}
 
+	public List<AddressRequestModel> getAddresses() {
+		return addresses;
+	}
 
+	public void setAddresses(List<AddressRequestModel> addresses) {
+		this.addresses = addresses;
+	}
 }

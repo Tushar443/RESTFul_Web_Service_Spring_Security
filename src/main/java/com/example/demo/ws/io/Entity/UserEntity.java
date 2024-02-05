@@ -1,11 +1,9 @@
 package com.example.demo.ws.io.Entity;
 
 import java.io.Serializable;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity(name = "users")
 public class UserEntity implements Serializable {
@@ -34,6 +32,8 @@ public class UserEntity implements Serializable {
 
 	@Column(nullable = false)
 	private Boolean emailVerificationStatus = false;
+	@OneToMany(mappedBy = "userDetails",cascade = CascadeType.ALL)
+	private List<AddressEntity> addresses;
 
 	public long getId() {
 		return id;
@@ -99,4 +99,11 @@ public class UserEntity implements Serializable {
 		this.emailVerificationStatus = emailVerificationStatus;
 	}
 
+	public List<AddressEntity> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressEntity> addresses) {
+		this.addresses = addresses;
+	}
 }
