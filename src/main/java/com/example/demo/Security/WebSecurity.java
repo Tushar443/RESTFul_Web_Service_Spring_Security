@@ -45,7 +45,12 @@ public class WebSecurity {
 						configure
 								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.SIGN_UP_URL,HttpMethod.POST.name()))
 								.permitAll()
-								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.EMAIL_VERIFICATION_URL,HttpMethod.GET.name())).permitAll()
+								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.EMAIL_VERIFICATION_URL,HttpMethod.GET.name()))
+								.permitAll()
+								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.PASSWORD_RESET_REQUEST_URL,HttpMethod.POST.name()))
+								.permitAll()
+								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.PASSWORD_RESET_URL,HttpMethod.POST.name()))
+								.permitAll()
 								.anyRequest().authenticated()
 				)
 			  .authenticationManager(authenticationManager)

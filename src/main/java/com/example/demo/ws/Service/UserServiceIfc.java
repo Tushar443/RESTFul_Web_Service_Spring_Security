@@ -23,4 +23,8 @@ public interface UserServiceIfc extends UserDetailsService{
 	List<UserDto> getUsers(int page, int limit);
 
     boolean verifyEmail(String token);
+
+	boolean requestPasswordReset(String email);
+
+	Boolean resetPassword(String password, String token);
 }

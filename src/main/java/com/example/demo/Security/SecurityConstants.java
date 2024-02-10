@@ -7,10 +7,12 @@ import org.springframework.core.env.Environment;
 public class SecurityConstants
 {
     public static final long EXPIRATION_TIME = 864000000;//10 days
+    public static final long PASSWORD_RESET_EXPIRATION_TIME = 3600000;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String SIGN_UP_URL = "/users";
     public static final String EMAIL_VERIFICATION_URL = "/users/email-verification";
-    
+    public static final String PASSWORD_RESET_REQUEST_URL = "/users/password-reset-request";
+    public static final String PASSWORD_RESET_URL = "/users/password-reset";
     public static final String TOKEN_SECRET = "cfiwefjecnsddhuseduo3842384723twyfmwecmwr4r8w9rw30r0w83rwjrwjrwe";
 
 
