@@ -1,9 +1,16 @@
 package com.example.demo.ws.shared;
 
-import java.security.SecureRandom;
-import java.util.Random;
-
+import com.example.demo.Security.SecurityConstants;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParserBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import java.security.SecureRandom;
+import java.util.Date;
+import java.util.Random;
 
 @Component
 public class MyUtils {
@@ -31,4 +38,25 @@ public class MyUtils {
 		return new String(returnValue);
 	}
 
+	public static boolean hasTokenExpired(String token) {
+		Claims claims = Jwts
+				.parser()
+				.setSigningKey(SecurityConstants.getTokenSecret())
+				.build()
+				.parseSignedClaims(token)
+				.getPayload();
+
+		Date tokenExpire = claims.getExpiration();
+		Date todayDate = new Date();
+		return tokenExpire.before(todayDate);
+	}
+
+	public String generateEmailVerificationTOken(String publicUserId) {
+		String token = Jwts.builder()
+				.subject(publicUserId)
+				.expiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512,SecurityConstants.getTokenSecret())
+				.compact();
+		return token;
+	}
 }

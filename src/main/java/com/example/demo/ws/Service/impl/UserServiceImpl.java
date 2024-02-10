@@ -1,7 +1,6 @@
 package com.example.demo.ws.Service.impl;
 
 import com.example.demo.ws.shared.dto.AddressDTO;
-import com.example.demo.ws.ui.model.response.UserRest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +51,10 @@ public class UserServiceImpl implements UserServiceIfc {
 		String publicUserId = utils.generateUserId(16);
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+
+		String emailVerificationToken = utils.generateEmailVerificationTOken(publicUserId);
+		userEntity.setEmailVerificationToken(emailVerificationToken);
+		userEntity.setEmailVerificationStatus(false);
 		//save in DB
 		UserEntity userEntityDB = userRepo.save(userEntity);
 		UserDto userDto = mapper.map(userEntityDB,UserDto.class);
@@ -140,6 +143,29 @@ public class UserServiceImpl implements UserServiceIfc {
 		return returnValue;
 	}
 
+	/**
+	 * @param token
+	 * @return
+	 */
+	@Override
+	public boolean verifyEmail(String token) {
+		boolean isVerify = false;
+
+		//find user by token
+		UserEntity userEntity = userRepo.findUserByEmailVerificationToken(token);
+
+		if(userEntity != null){
+			boolean hasTokenExpired = MyUtils.hasTokenExpired(token);
+			if(!hasTokenExpired){
+				userEntity.setEmailVerificationToken(null);
+				userEntity.setEmailVerificationStatus(Boolean.TRUE);
+				userRepo.save(userEntity);
+				isVerify = true;
+			}
+		}
+		return isVerify;
+	}
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.out.println("----------loadUserByUsername() Method Call----------");
@@ -147,7 +173,9 @@ public class UserServiceImpl implements UserServiceIfc {
 		if(userEntity == null){
 			throw new UsernameNotFoundException(username);
 		}
-		return new User(username,userEntity.getEncryptedPassword(),new ArrayList<>());
+		//return new User(username,userEntity.getEncryptedPassword(),new ArrayList<>());
+		return new User(userEntity.getEmail(),userEntity.getEncryptedPassword()
+				,userEntity.getEmailVerificationStatus()
+				,true,true,true,new ArrayList<>());
 	}
-
 }

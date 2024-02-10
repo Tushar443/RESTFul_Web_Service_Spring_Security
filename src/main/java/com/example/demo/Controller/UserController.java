@@ -3,20 +3,22 @@ package com.example.demo.Controller;
 import com.example.demo.ws.Service.AddressServiceIfc;
 import com.example.demo.ws.exception.UserServiceException;
 import com.example.demo.ws.shared.dto.AddressDTO;
-import com.example.demo.ws.ui.model.response.AddressResponseModel;
-import com.example.demo.ws.ui.model.response.ErrorMessages;
+import com.example.demo.ws.ui.model.response.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
-import com.example.demo.ws.ui.model.response.UserRest;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -98,7 +100,7 @@ public class UserController {
     }
 
 	@GetMapping(path = "/{id}/addresses")
-	public List<AddressResponseModel> getAddressByUserId(@PathVariable String id) {
+	public CollectionModel<AddressResponseModel> getAddressByUserId(@PathVariable String id) {
 		List<AddressResponseModel> returnValue = new ArrayList<>();
 		List<AddressDTO> addressDTOList = addressServiceIfc.getAddresses(id);
 		ModelMapper modelMapper = new ModelMapper();
@@ -106,16 +108,58 @@ public class UserController {
 			Type listType = new TypeToken<List<AddressResponseModel>>() {}.getType();
 			returnValue = modelMapper.map(addressDTOList, listType);
 		}
-		return returnValue;
+
+		for(AddressResponseModel address: returnValue){
+			Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+							.getAddressByAddressId(address.getAddressId(),id))
+							.withSelfRel();
+			address.add(selfLink);
+		}
+
+		//Add Links http://localhost:8080/users/<userId>
+		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(id).withRel("user");
+
+		//Add Links http://localhost:8080/users/<userId>/addresses/<addressId>
+		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+						.getAddressByUserId(id))
+						.withSelfRel();
+		return CollectionModel.of(returnValue,userLink,selfLink);
 	}
 
-	@GetMapping(path = "/{id}/addresses/{addressId}")
-	public AddressResponseModel getAddressByAddressId(@PathVariable String addressId) {
+	@GetMapping(path = "/{userId}/addresses/{addressId}")
+	public EntityModel<AddressResponseModel> getAddressByAddressId(@PathVariable String addressId,@PathVariable String userId) {
 		AddressResponseModel returnValue = new AddressResponseModel();
 		AddressDTO addressDTO = addressServiceIfc.getAddress(addressId);
 		ModelMapper modelMapper = new ModelMapper();
-		if(addressDTO==null){return returnValue;}
-		returnValue = modelMapper.map(addressDTO, AddressResponseModel.class);
+		if(addressDTO!=null) {
+			returnValue = modelMapper.map(addressDTO, AddressResponseModel.class);
+		}
+		//Add Links http://localhost:8080/users/<userId>
+		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
+		//Add Links http://localhost:8080/users/<userId>/addresses
+		Link addressesLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+						.getAddressByUserId(userId))
+						.withRel("addresses");
+		//Add Links http://localhost:8080/users/<userId>/addresses/<addressId>
+		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+						.getAddressByAddressId(addressId,userId))
+						.withSelfRel();
+		return EntityModel.of(returnValue,Arrays.asList(userLink,addressesLink,selfLink));
+	}
+
+	@GetMapping(path = "/email-verification")
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token){
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+		boolean verified = userSerivce.verifyEmail(token);
+		if(verified){
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		}else{
+			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		}
+
 		return returnValue;
 	}
+
 }

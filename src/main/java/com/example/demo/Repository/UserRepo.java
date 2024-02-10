@@ -13,4 +13,5 @@ public interface UserRepo extends JpaRepository<UserEntity, Long> {
 
 	UserEntity findByUserId(String id);
 
+    UserEntity findUserByEmailVerificationToken(String token);
 }

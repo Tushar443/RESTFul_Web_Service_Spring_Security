@@ -21,4 +21,6 @@ public interface UserServiceIfc extends UserDetailsService{
 	UserDto DeleteUser(String id);
 
 	List<UserDto> getUsers(int page, int limit);
+
+    boolean verifyEmail(String token);
 }
