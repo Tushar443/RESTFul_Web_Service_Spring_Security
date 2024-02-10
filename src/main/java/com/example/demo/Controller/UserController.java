@@ -3,8 +3,7 @@ package com.example.demo.Controller;
 import com.example.demo.ws.Service.AddressServiceIfc;
 import com.example.demo.ws.exception.UserServiceException;
 import com.example.demo.ws.shared.dto.AddressDTO;
-import com.example.demo.ws.ui.model.response.AddressResponseModel;
-import com.example.demo.ws.ui.model.response.ErrorMessages;
+import com.example.demo.ws.ui.model.response.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
-import com.example.demo.ws.ui.model.response.UserRest;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -148,4 +146,20 @@ public class UserController {
 						.withSelfRel();
 		return EntityModel.of(returnValue,Arrays.asList(userLink,addressesLink,selfLink));
 	}
+
+	@GetMapping(path = "/email-verification")
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token){
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+		boolean verified = userSerivce.verifyEmail(token);
+		if(verified){
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		}else{
+			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		}
+
+		return returnValue;
+	}
+
 }

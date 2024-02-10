@@ -44,7 +44,9 @@ public class WebSecurity {
 					configure ->
 						configure
 								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.SIGN_UP_URL,HttpMethod.POST.name()))
-								.permitAll().anyRequest().authenticated()
+								.permitAll()
+								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.EMAIL_VERIFICATION_URL,HttpMethod.GET.name())).permitAll()
+								.anyRequest().authenticated()
 				)
 			  .authenticationManager(authenticationManager)
 			  .addFilter(authenticationFilter)
