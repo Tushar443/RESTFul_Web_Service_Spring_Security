@@ -1,5 +1,7 @@
 package com.example.demo.ws.Service.impl;
 
+import com.example.demo.Repository.PasswordResetTokenRepo;
+import com.example.demo.ws.io.Entity.PasswordResetTokenEntity;
 import com.example.demo.ws.shared.dto.AddressDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +32,10 @@ public class UserServiceImpl implements UserServiceIfc {
 
 	@Autowired
 	MyUtils utils;
-	
+
+    @Autowired
+    PasswordResetTokenRepo passwordResetTokenRepo;
+
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -52,7 +57,7 @@ public class UserServiceImpl implements UserServiceIfc {
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-		String emailVerificationToken = utils.generateEmailVerificationTOken(publicUserId);
+		String emailVerificationToken = utils.generateEmailVerificationToken(publicUserId);
 		userEntity.setEmailVerificationToken(emailVerificationToken);
 		userEntity.setEmailVerificationStatus(false);
 		//save in DB
@@ -166,7 +171,59 @@ public class UserServiceImpl implements UserServiceIfc {
 		return isVerify;
 	}
 
-	@Override
+    /**
+     * @param email
+     * @return
+     */
+    @Override
+    public boolean requestPasswordReset(String email) {
+        Boolean result = false;
+        UserEntity userEntity = userRepo.findUserByEmail(email);
+        if(userEntity == null){
+            return false;
+        }
+        String token = utils.generatePasswordRestToken(userEntity.getUserId());
+
+        PasswordResetTokenEntity passwordResetTokenEntity = new PasswordResetTokenEntity();
+        passwordResetTokenEntity.setToken(token);
+        passwordResetTokenEntity.setUserDetails(userEntity);
+        PasswordResetTokenEntity returnValue = passwordResetTokenRepo.save(passwordResetTokenEntity);
+        if(returnValue != null){
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * @param password
+     * @param token
+     * @return
+     */
+    @Override
+    public Boolean resetPassword(String password, String token) {
+        Boolean returnValue = false;
+        if(MyUtils.hasTokenExpired(token)){
+            return returnValue;
+        }
+
+        PasswordResetTokenEntity passwordResetTokenEntity = passwordResetTokenRepo.findByToken(token);
+        if(passwordResetTokenEntity == null){
+            return returnValue;
+        }
+
+        String encodedPass = bCryptPasswordEncoder.encode(password);
+
+        UserEntity userEntity = passwordResetTokenEntity.getUserDetails();
+        userEntity.setEncryptedPassword(encodedPass);
+        UserEntity saveUser = userRepo.save(userEntity);
+        if(saveUser != null && saveUser.getEncryptedPassword().equals(encodedPass)){
+            returnValue = true;
+        }
+        passwordResetTokenRepo.delete(passwordResetTokenEntity);
+        return returnValue;
+    }
+
+    @Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		System.out.println("----------loadUserByUsername() Method Call----------");
 		UserEntity userEntity = userRepo.findUserByEmail(username);
