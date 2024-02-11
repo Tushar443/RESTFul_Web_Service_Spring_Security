@@ -37,9 +37,9 @@ public class UserController {
 	AddressServiceIfc addressServiceIfc;
 
 	@GetMapping(path = "/{id}")
-	public UserRest getUser(@PathVariable String id) {
+	public UserRest getUser(@PathVariable String email) {
 		UserRest userRest = new UserRest();
-		UserDto dbValue = userSerivce.getUserByUserId(id);
+		UserDto dbValue = userSerivce.getUserByUserId(email);
 		BeanUtils.copyProperties(dbValue,userRest);
 		return userRest;
 	}

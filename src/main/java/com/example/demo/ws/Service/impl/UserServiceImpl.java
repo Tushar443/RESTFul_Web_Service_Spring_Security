@@ -71,9 +71,13 @@ public class UserServiceImpl implements UserServiceIfc {
 		UserEntity userEntity = userRepo.findUserByEmail(email);
 		if(userEntity == null){
 			throw new UsernameNotFoundException(email);
+			//added for JUnit testing
+			//throw new NullPointerException(email);
 		}
 		UserDto returnValue = new UserDto();
 		BeanUtils.copyProperties(userEntity,returnValue);
+		//set for JUnit Test
+		//returnValue.setFirstName(null);
 		return returnValue;
 	}
 
