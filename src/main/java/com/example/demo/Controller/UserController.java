@@ -1,14 +1,16 @@
 package com.example.demo.Controller;
 
 import com.example.demo.ws.Service.AddressServiceIfc;
+import com.example.demo.ws.Service.UserServiceIfc;
 import com.example.demo.ws.exception.UserServiceException;
 import com.example.demo.ws.shared.dto.AddressDTO;
+import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.PasswordResetModel;
 import com.example.demo.ws.ui.model.request.PasswordResetRequestModel;
+import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
 import com.example.demo.ws.ui.model.response.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.modelmapper.internal.bytebuddy.description.method.MethodDescription;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -18,15 +20,13 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.demo.ws.Service.UserServiceIfc;
-import com.example.demo.ws.shared.dto.UserDto;
-import com.example.demo.ws.ui.model.request.UserDetailsReqModel;
-
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RequestMapping("/users")
 public class UserController {
 

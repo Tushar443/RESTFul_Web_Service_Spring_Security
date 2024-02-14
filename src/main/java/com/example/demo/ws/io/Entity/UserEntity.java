@@ -5,7 +5,8 @@ import java.util.List;
 
 import jakarta.persistence.*;
 
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class UserEntity implements Serializable {
 
 	private static final long serialVersionUID = -9026442651345935128L;

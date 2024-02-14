@@ -51,6 +51,8 @@ public class WebSecurity {
 								.permitAll()
 								.requestMatchers(new AntPathRequestMatcher(SecurityConstants.PASSWORD_RESET_URL,HttpMethod.POST.name()))
 								.permitAll()
+								.requestMatchers(new AntPathRequestMatcher("/v2/api-docs"))//"/configuration/**","/swagger/**","/webjars/**"))
+								.permitAll()
 								.anyRequest().authenticated()
 				)
 			  .authenticationManager(authenticationManager)
