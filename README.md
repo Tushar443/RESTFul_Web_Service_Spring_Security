@@ -11,5 +11,6 @@ Udemy Couser Spring Boot RESTFul web services
 ### HATEOAS
 ### Email Verification with JWT tokens
 ### Password Reset
+### Roles and Authority
 
 
