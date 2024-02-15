@@ -9,18 +9,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 public class UdemyDemoApi2Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UdemyDemoApi2Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UdemyDemoApi2Application.class, args);
+    }
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	//Instead using @Component in the Context class we used @Bean class
-	@Bean
-	public SpringApplicationContext springApplicationContext(){
-		return new SpringApplicationContext();
-	}
+    //Instead using @Component in the Context class we used @Bean class
+    @Bean
+    public SpringApplicationContext springApplicationContext() {
+        return new SpringApplicationContext();
+    }
 }

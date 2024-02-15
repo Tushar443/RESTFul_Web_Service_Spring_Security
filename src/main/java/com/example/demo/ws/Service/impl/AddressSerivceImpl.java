@@ -32,9 +32,11 @@ public class AddressSerivceImpl implements AddressServiceIfc {
         List<AddressDTO> returnValue = new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
         UserEntity userEntity = userRepo.findByUserId(userId);
-        if(userEntity == null){ return returnValue;}
+        if (userEntity == null) {
+            return returnValue;
+        }
         Iterable<AddressEntity> addressEntities = addressRepo.findAllByUserDetails(userEntity);
-        for(AddressEntity address : addressEntities){
+        for (AddressEntity address : addressEntities) {
             returnValue.add(modelMapper.map(address, AddressDTO.class));
         }
         return returnValue;

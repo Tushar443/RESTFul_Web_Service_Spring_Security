@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AddressRepo extends JpaRepository<AddressEntity,Long> {
+public interface AddressRepo extends JpaRepository<AddressEntity, Long> {
 
     List<AddressEntity> findAllByUserDetails(UserEntity userEntity);
 
