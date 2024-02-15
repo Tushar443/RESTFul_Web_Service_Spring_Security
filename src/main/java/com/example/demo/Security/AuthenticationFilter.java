@@ -33,24 +33,24 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         System.out.println("----------AuthenticationFilter == attemptAuthentication() Method Call----------");
-        try{
-                UserLoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(),UserLoginRequestModel.class);
-                return getAuthenticationManager().authenticate(
-                        new UsernamePasswordAuthenticationToken(creds.getEmail(),creds.getPassword(),new ArrayList<>())
-                );
-            }catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            UserLoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(), UserLoginRequestModel.class);
+            return getAuthenticationManager().authenticate(
+                    new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>())
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         System.out.println("----------AuthenticationFilter == successfulAuthentication() Method Call----------");
-        byte [] secreteKeyBytes = SecurityConstants.getTokenSecret().getBytes();
+        byte[] secreteKeyBytes = SecurityConstants.getTokenSecret().getBytes();
         SecretKey secretKey = Keys.hmacShaKeyFor(secreteKeyBytes);
         Instant now = Instant.now();
 
-        String userName = ((User)authResult.getPrincipal()).getUsername();
+        String userName = ((UserPrinciple) authResult.getPrincipal()).getUsername();
         String token = Jwts.builder()
                 .setSubject(userName)
                 .setExpiration(Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
@@ -60,7 +60,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         UserServiceIfc userService = (UserServiceIfc) SpringApplicationContext.getBean("userServiceImpl");
         UserDto userDto = userService.getUser(userName);
-        response.addHeader(SecurityConstants.HEADER_STRING,SecurityConstants.TOKEN_PREFIX + token);
-        response.addHeader(SecurityConstants.USER_ID,userDto.getUserId());
+        response.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
+        response.addHeader(SecurityConstants.USER_ID, userDto.getUserId());
     }
 }

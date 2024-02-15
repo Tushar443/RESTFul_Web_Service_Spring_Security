@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+
 @Entity(name = "password_reset_tokens")
 
 public class PasswordResetTokenEntity implements Serializable {
