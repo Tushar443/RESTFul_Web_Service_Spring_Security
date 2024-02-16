@@ -1,8 +1,10 @@
 package com.example.demo.ws.Service.impl;
 
 import com.example.demo.Repository.PasswordResetTokenRepo;
+import com.example.demo.Repository.RoleRepo;
 import com.example.demo.Security.UserPrinciple;
 import com.example.demo.ws.io.Entity.PasswordResetTokenEntity;
+import com.example.demo.ws.io.Entity.RoleEntity;
 import com.example.demo.ws.shared.dto.AddressDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +25,8 @@ import com.example.demo.ws.shared.MyUtils;
 import com.example.demo.ws.shared.dto.UserDto;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -34,6 +38,8 @@ public class UserServiceImpl implements UserServiceIfc {
     @Autowired
     MyUtils utils;
 
+    @Autowired
+    RoleRepo roleRepo;
     @Autowired
     PasswordResetTokenRepo passwordResetTokenRepo;
 
@@ -61,6 +67,16 @@ public class UserServiceImpl implements UserServiceIfc {
         String emailVerificationToken = utils.generateEmailVerificationToken(publicUserId);
         userEntity.setEmailVerificationToken(emailVerificationToken);
         userEntity.setEmailVerificationStatus(false);
+
+        //set roles
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        for (String role : user.getRoles()) {
+          RoleEntity roleEntity = roleRepo.findByName(role);
+          if(roleEntity!=null){
+              roleEntities.add(roleEntity);
+          }
+        }
+        userEntity.setRoles(roleEntities);
         //save in DB
         UserEntity userEntityDB = userRepo.save(userEntity);
         UserDto userDto = mapper.map(userEntityDB, UserDto.class);
