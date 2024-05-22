@@ -1,7 +1,7 @@
 package com.example.demo.Controller;
 
-import com.example.demo.ws.Service.AddressServiceIfc;
-import com.example.demo.ws.Service.UserServiceIfc;
+import com.example.demo.ws.ui.model.Service.AddressServiceIfc;
+import com.example.demo.ws.ui.model.Service.UserServiceIfc;
 import com.example.demo.ws.exception.UserServiceException;
 import com.example.demo.ws.shared.Roles;
 import com.example.demo.ws.shared.dto.AddressDTO;
@@ -19,7 +19,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

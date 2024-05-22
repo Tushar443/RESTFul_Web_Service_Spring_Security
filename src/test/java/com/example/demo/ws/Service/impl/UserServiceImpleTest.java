@@ -11,16 +11,15 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.ws.ui.model.Service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.example.demo.Repository.PasswordResetTokenRepo;
 import com.example.demo.Repository.UserRepo;
 import com.example.demo.ws.io.Entity.UserEntity;
 import com.example.demo.ws.shared.MyUtils;
@@ -29,7 +28,7 @@ import com.example.demo.ws.shared.dto.UserDto;
 
 class UserServiceImpleTest {
 	@InjectMocks
-	UserServiceImpl userService;
+    UserServiceImpl userService;
 	
 	@Mock
 	UserRepo userRepo;
