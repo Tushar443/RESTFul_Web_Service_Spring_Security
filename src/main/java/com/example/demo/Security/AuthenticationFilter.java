@@ -1,6 +1,6 @@
 package com.example.demo.Security;
 
-import com.example.demo.ws.Service.UserServiceIfc;
+import com.example.demo.ws.ui.model.Service.UserServiceIfc;
 import com.example.demo.ws.SpringApplicationContext;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.UserLoginRequestModel;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.SecretKey;

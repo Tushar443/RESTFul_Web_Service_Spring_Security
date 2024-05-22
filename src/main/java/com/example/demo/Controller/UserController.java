@@ -1,8 +1,9 @@
 package com.example.demo.Controller;
 
-import com.example.demo.ws.Service.AddressServiceIfc;
-import com.example.demo.ws.Service.UserServiceIfc;
+import com.example.demo.ws.ui.model.Service.AddressServiceIfc;
+import com.example.demo.ws.ui.model.Service.UserServiceIfc;
 import com.example.demo.ws.exception.UserServiceException;
+import com.example.demo.ws.shared.Roles;
 import com.example.demo.ws.shared.dto.AddressDTO;
 import com.example.demo.ws.shared.dto.UserDto;
 import com.example.demo.ws.ui.model.request.PasswordResetModel;
@@ -18,7 +19,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -40,7 +41,8 @@ public class UserController {
     @Autowired
     AddressServiceIfc addressServiceIfc;
 
-    //	@PreAuthorize("permitAll")
+    @PostAuthorize("returnObject.userId == principal.userId")
+    //@PreAuthorize("permitAll")
     @GetMapping(path = "/{id}")
     public UserRest getUser(@PathVariable String email) {
         UserRest userRest = new UserRest();
@@ -49,8 +51,6 @@ public class UserController {
         return userRest;
     }
 
-    //	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE}
-//				,produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
             , produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest addUser(@RequestBody UserDetailsReqModel userDetails) throws Exception {
@@ -60,15 +60,14 @@ public class UserController {
         }
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
+        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name())));
         UserDto createUser = userSerivce.createUser(userDto);
         UserRest userRest = modelMapper.map(userDto, UserRest.class);
         return userRest;
     }
 
-
-    //	@PreAuthorize("hasAuthority('DELETE_AUTHORITY') or returnObject.userId == principal.userId")
-//	@PostAuthorize("hasRole('ADMIN') or #id == principal.userId")
-    @Secured("ROLE_ADMIN")
+    //    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('DELETE_AUTHORITY') or returnObject.userId == principal.userId")
     @DeleteMapping(path = "/{id}")
     public UserRest deleteUser(@PathVariable String id) {
         UserRest userRest = new UserRest();

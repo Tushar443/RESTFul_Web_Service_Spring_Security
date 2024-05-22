@@ -1,4 +1,4 @@
-package com.example.demo.ws.Service;
+package com.example.demo.ws.ui.model.Service;
 
 import com.example.demo.ws.shared.dto.AddressDTO;
 

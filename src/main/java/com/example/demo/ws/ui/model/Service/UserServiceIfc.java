@@ -1,4 +1,4 @@
-package com.example.demo.ws.Service;
+package com.example.demo.ws.ui.model.Service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;

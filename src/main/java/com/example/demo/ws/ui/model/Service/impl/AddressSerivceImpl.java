@@ -1,14 +1,13 @@
-package com.example.demo.ws.Service.impl;
+package com.example.demo.ws.ui.model.Service.impl;
 
 import com.example.demo.Repository.AddressRepo;
 import com.example.demo.Repository.UserRepo;
-import com.example.demo.ws.Service.AddressServiceIfc;
+import com.example.demo.ws.ui.model.Service.AddressServiceIfc;
 import com.example.demo.ws.io.Entity.AddressEntity;
 import com.example.demo.ws.io.Entity.UserEntity;
 import com.example.demo.ws.shared.dto.AddressDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
